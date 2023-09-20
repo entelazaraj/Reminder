@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Location Reminder App</title>
+</head>
+<body>
+ 
+
+  <div class="sidenav">
+    <a href="reminder.html">Reminder</a>
+    <a href="notes.html">Notes</a>
+    <a href="#clients">Clients</a>
+    <a href="settings.html">Settings</a>
+  </div>
+
+
+    <div class="app">
+        <div class="message" id="message">Move Away And I <b>Remind</b> You.</div>
+        <input type="text" id="reminderInput" placeholder="Enter reminder message">
+        <input type="number" id="distanceInput" placeholder="Enter distance in meters">
+        <button id="setReminderButton">Set Reminder</button> 
+    </div>
+   
+        <!-- HTML Structure -->
+    <div id="tableContainer">
+        <table id="remindersTable">
+          <thead>
+            <tr><bold>
+              <th>Nr</th> <!-- Add the "Nr" column header -->
+              <th>Message</th>
+              <th>Time (min)</th>
+              <th>Distance (meters)</th>
+              <th>Action</th>
+            </bold></tr>
+          </thead>
+          <tbody id="remindersList">
+            <!-- Table rows will be dynamically generated here -->
+          </tbody>
+        </table>
+    </div>
+
+
+
+  <script src="script.js"></script>
+</body>
+</html>

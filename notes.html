@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Simple Note App</title>
+    <!-- Add FullCalendar CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css" rel="stylesheet" />
+
+<!-- Add FullCalendar JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+
+</head>
+<body>
+    <div class="sidenav">
+        <a href="reminder.html">Reminder</a>
+        <a href="notes.html">Notes</a>
+        <a href="#clients">Clients</a>
+        <a href="settings.html">Settings</a>
+      </div>
+    
+   
+
+    <h1>Simple Note App</h1>
+    <div>
+        <textarea id="noteInput" placeholder="Enter your note..." rows="5" cols="50"></textarea>
+        <input type="datetime-local" id="reminderInput" placeholder="Set a reminder...">
+        <button onclick="addNote()">Add Note</button>
+    </div>
+    <ul id="noteList"></ul>
+
+    <script>
+        // Function to load notes from local storage
+        function loadNotes() {
+            const savedNotes = JSON.parse(localStorage.getItem("notes")) || [];
+            const noteList = document.getElementById("noteList");
+
+            savedNotes.forEach((noteText) => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    <p>${noteText}</p>
+                    <button onclick="removeNote(this)">Delete</button>
+                `;
+                noteList.appendChild(listItem);
+            });
+        }
+
+        // Load notes when the page loads
+        document.addEventListener("DOMContentLoaded", loadNotes);
+
+        // Function to save notes to local storage
+        function saveNotes(notes) {
+            localStorage.setItem("notes", JSON.stringify(notes));
+        }
+
+        function addNote() {
+            const noteInput = document.getElementById("noteInput");
+            const reminderInput = document.getElementById("reminderInput");
+            const noteText = noteInput.value.trim();
+            const reminderText = reminderInput.value.trim();
+
+            if (noteText !== "") {
+                const noteList = document.getElementById("noteList");
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    <p>${noteText} (Reminder: ${reminderText})</p>
+                    <button onclick="removeNote(this)">Delete</button>
+                `;
+                noteList.appendChild(listItem);
+                noteInput.value = "";
+                reminderInput.value = "";
+
+                // Save the updated notes to local storage
+                const savedNotes = JSON.parse(localStorage.getItem("notes")) || [];
+                savedNotes.push(`${noteText} (Reminder: ${reminderText})`);
+                saveNotes(savedNotes);
+            }
+        }
+
+        function removeNote(button) {
+            const listItem = button.parentElement;
+            listItem.remove();
+
+            // Update local storage after removing a note
+            const savedNotes = JSON.parse(localStorage.getItem("notes")) || [];
+            const updatedNotes = savedNotes.filter((noteText) => {
+                return noteText !== listItem.querySelector("p").textContent.trim();
+            });
+            saveNotes(updatedNotes);
+        }
+    </script>
+    
+  <script src="script.js"></script>
+</body>
+</html>

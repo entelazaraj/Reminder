@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location-Based Reminder App</title>
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Style for reminders */
+        .reminder {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Style for the list of reminders */
+        #remindersList {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Style for reminder distance */
+        .reminder-distance {
+            font-style: italic;
+            font-size: 12px;
+        }
+
+
+        .text-primary {
+            font-style: italic;
+            font-size: 60px;
+            text-align: center;
+            color: aqua;
+        }
+
+        /* Style for delete button */
+        .delete-button {
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-primary text-center">Location-Based Reminder App</h1>
+    
+    <!-- Form to add a new reminder -->
+    <form id="reminderForm">
+        <label for="reminderText">Enter a reminder:</label>
+        <input type="text" id="reminderText" required>
+        <label for="reminderDistance">Reminder distance (meters):</label>
+        <input type="number" id="reminderDistance" required>
+        <button type="submit">Add Reminder</button>
+    </form>
+
+    <!-- Container for displaying reminders -->
+    <ul id="remindersList">
+        <!-- Reminders will be added here -->
+    </ul>
+
+    <script>
+        $(document).ready(function() {
+            // Load reminders from local storage on page load
+            loadReminders();
+
+            // Form submission event handler
+            $("#reminderForm").submit(function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Get the reminder text and distance from the input fields
+                var reminderText = $("#reminderText").val();
+                var reminderDistance = parseFloat($("#reminderDistance").val());
+
+                // Create a new reminder element and append it to the list
+                var reminderElement = $("<li class='reminder'></li>");
+                reminderElement.html(
+                    reminderText +
+                    "<span class='reminder-distance'> (within " + reminderDistance + " meters)</span>" +
+                    "<button class='delete-button'>Delete</button>"
+                );
+
+        
+                $("#remindersList").append(reminderElement);
+
+                // Save the reminder to local storage
+                saveReminder(reminderText, reminderDistance);
+
+                // Clear the input fields
+                $("#reminderText").val("");
+                $("#reminderDistance").val("");
+
+                // Attach a click event handler to the delete button
+                reminderElement.find(".delete-button").click(function() {
+                    reminderElement.remove();
+                    // Remove the reminder from local storage
+                    removeReminder(reminderText, reminderDistance);
+
+
+                });
+            });
+
+            // Function to load reminders from local storage
+            function loadReminders() {
+                var reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+                reminders.forEach(function(reminder) {
+                    var reminderElement = $("<li class='reminder'></li>");
+                    reminderElement.html(
+                        reminder.text +
+                        "<span class='reminder-distance'> (within " + reminder.distance + " meters)</span>" +
+                        "<button class='delete-button'>Delete</button>"
+                    );
+                    $("#remindersList").append(reminderElement);
+
+                    // Attach a click event handler to the delete button
+                    reminderElement.find(".delete-button").click(function() {
+                        reminderElement.remove();
+                        // Remove the reminder from local storage
+                        removeReminder(reminder.text, reminder.distance);
+                    });
+                });
+            }
+
+            // Function to save a reminder to local storage
+            function saveReminder(text, distance) {
+                var reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+                reminders.push({ text: text, distance: distance });
+                localStorage.setItem("reminders", JSON.stringify(reminders));
+            }
+
+            // Function to remove a reminder from local storage
+            function removeReminder(text, distance) {
+                var reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+                reminders = reminders.filter(function(reminder) {
+                    return reminder.text !== text || reminder.distance !== distance;
+                });
+                localStorage.setItem("reminders", JSON.stringify(reminders));
+            }
+
+            // Get the user's current geolocation
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    console.log("Current Location: Latitude - " + latitude + ", Longitude - " + longitude);
+                    // You can compare the user's location with the reminder location and trigger reminders accordingly.
+                });
+            } else {
+                console.log("Geolocation is not available in this browser.");
+            }
+        });
+    </script>
+</body>
+</html>
